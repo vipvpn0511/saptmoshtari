@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1d4ed8">
+<title>تعمیرات موبایل علی</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f8;--card:#fff;--ink:#16203a;--mute:#5a6685;--line:#cfd6e8;--brand:#1d4ed8;--tint:#e3ebff;--wait:#b7791f;--ready:#0f7b4f;--done:#6b7b82}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.7 Vazirmatn,Tahoma,sans-serif}
+header{background:var(--brand);color:#fff;padding:22px 16px 18px}
+header h1{margin:0;font-size:1.5rem;font-weight:800}
+header p{margin:2px 0 0;opacity:.85;font-size:.9rem}
+main{max-width:640px;margin:0 auto;padding:16px}
+form{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px}
+label{display:grid;gap:4px;font-weight:600;font-size:.9rem}
+input,select,textarea{font:inherit;padding:10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);width:100%}
+input[type=checkbox]{width:auto}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid #93b4f8;outline-offset:1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.due{display:grid;gap:4px}
+.due>span{font-weight:600;font-size:.9rem}
+.row3{display:grid;grid-template-columns:1.3fr 1.6fr 1fr;gap:6px}
+.row3 select{padding:10px 4px}
+.acc{display:flex;gap:6px 16px;flex-wrap:wrap;align-items:center}
+.lab{font-weight:600;font-size:.9rem;width:100%}
+.ck{display:flex;gap:6px;align-items:center;font-weight:400}
+button{font:inherit;font-weight:600;cursor:pointer;border:0;border-radius:6px;padding:11px 16px}
+.save{background:var(--brand);color:#fff}
+.cancel{background:#eee;color:var(--ink);display:none}
+.warn{display:none;background:#fff4e0;border:1px solid #f2d29b;color:#7a4a06;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.88rem;cursor:pointer}
+.bar{display:flex;gap:8px;margin:22px 0 10px;align-items:center}
+.bar h2{margin:0;font-size:1.1rem;flex:none}
+.bar input{flex:1}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.chip{background:#fff;border:1px solid var(--line);color:var(--ink);padding:5px 12px;font-size:.85rem}
+.chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.item{background:var(--card);border:1px solid var(--line);border-right:6px solid var(--done);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.item.s-wait{border-right-color:var(--wait)}
+.item.s-ready{border-right-color:var(--ready)}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.name{font-weight:800}
+.date{color:var(--mute);font-size:.8rem}
+.meta{color:var(--mute);font-size:.9rem;margin:2px 0}
+.late{color:#b42318;font-weight:600}
+.acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.acts select{width:auto;padding:6px 8px}
+.acts a,.acts button{padding:6px 12px;font-size:.85rem;border-radius:6px;text-decoration:none;background:var(--tint);color:var(--brand);font-weight:600}
+.acts .main{background:var(--brand);color:#fff}
+.acts .wa{background:#dcf8e6;color:#0a6b35}
+.acts .del{background:#f7e3e0;color:#9b2c1f}
+.empty{text-align:center;color:var(--mute);padding:28px 8px}
+.total{color:var(--mute);font-size:.85rem;flex:1}
+.tools{display:flex;gap:8px;align-items:center;margin:0 0 10px;flex-wrap:wrap}
+.tool{background:var(--tint);color:var(--brand);padding:6px 12px;font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600}
+.rep{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--line)}
+#lock{position:fixed;inset:0;background:var(--brand);display:none;place-items:center;z-index:9;padding:16px}
+#lock form{width:100%;max-width:320px}
+#ov{position:fixed;inset:0;background:rgba(10,18,40,.82);display:none;place-items:start center;overflow:auto;z-index:8;padding:14px}
+.ovb{width:100%;max-width:440px}
+#ovimg{width:100%;display:block;border-radius:10px;min-height:120px}
+.ovacts{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 20px}
+.ovacts button{flex:1;white-space:nowrap}
+#rc{display:none}
+@media print{body>*:not(#rc){display:none!important}#rc{display:block}#rc img{width:100%}}
+</style>
+</head>
+<body>
+<header>
+  <h1>تعمیرات موبایل علی</h1>
+  <p>ثبت و پیگیری مشتری‌ها</p>
+</header>
+<main>
+  <div class="warn" id="bn1"></div>
+  <div class="warn" id="bn2">بیش از یک هفته از آخرین پشتیبان‌گیری گذشته. برای دانلود پشتیبان بزن.</div>
+
+  <form id="f">
+    <input type="hidden" id="eid">
+    <div class="row">
+      <label>نام مشتری<input id="name" required></label>
+      <label>شماره تماس<input id="phone" type="tel" inputmode="tel" required></label>
+    </div>
+    <div class="row">
+      <label>مدل گوشی<input id="model" required></label>
+      <label>هزینه (تومان)<input id="cost" type="number" inputmode="numeric" min="0"></label>
+    </div>
+    <div class="row">
+      <label>بیعانه (تومان)<input id="deposit" type="number" inputmode="numeric" min="0"></label>
+      <label>وضعیت
+        <select id="status">
+          <option value="wait">در حال تعمیر</option>
+          <option value="ready">آماده تحویل</option>
+          <option value="done">تحویل شد</option>
+        </select>
+      </label>
+    </div>
+    <label>مشکل دستگاه<textarea id="issue" rows="2" required></textarea></label>
+    <label>وضعیت ظاهری دستگاه<input id="cond" placeholder="مثلاً خط‌وخش پشت، ترک گوشه صفحه"></label>
+    <div class="acc" id="acc">
+      <span class="lab">لوازم همراه</span>
+      <label class="ck"><input type="checkbox" value="سیم‌کارت"> سیم‌کارت</label>
+      <label class="ck"><input type="checkbox" value="مموری"> مموری</label>
+      <label class="ck"><input type="checkbox" value="قاب"> قاب</label>
+      <label class="ck"><input type="checkbox" value="شارژر"> شارژر</label>
+    </div>
+    <label>رمز یا الگوی قفل<input id="lockcode" placeholder="فقط برای تعمیرکار، روی رسید چاپ نمی‌شود"></label>
+    <div class="due">
+      <span>تاریخ تحویل (شمسی)</span>
+      <div class="row3">
+        <select id="dy"><option value="">سال</option></select>
+        <select id="dm"><option value="">ماه</option></select>
+        <select id="dd"><option value="">روز</option></select>
+      </div>
+    </div>
+    <button class="save" id="sbtn" type="submit">ثبت مشتری</button>
+    <button class="cancel" id="cbtn" type="button">انصراف از ویرایش</button>
+  </form>
+
+  <div class="bar">
+    <h2>مشتری‌ها</h2>
+    <input id="q" type="search" placeholder="جستجو با نام، شماره، مدل، شماره رسید یا کد تحویل">
+  </div>
+  <div class="chips">
+    <button type="button" class="chip" data-f="all">همه</button>
+    <button type="button" class="chip" data-f="wait">در حال تعمیر</button>
+    <button type="button" class="chip" data-f="ready">آماده تحویل</button>
+    <button type="button" class="chip" data-f="done">تحویل شد</button>
+  </div>
+  <details>
+    <summary>گزارش درآمد ماهانه</summary>
+    <div id="rep"></div>
+  </details>
+  <div class="tools">
+    <span class="total" id="total"></span>
+    <button type="button" class="tool" id="exp">دانلود پشتیبان</button>
+    <button type="button" class="tool" id="imp">بازیابی پشتیبان</button>
+    <button type="button" class="tool" id="pin">تنظیم رمز</button>
+    <input type="file" id="file" accept=".json" hidden>
+  </div>
+  <div id="list"></div>
+</main>
+
+<div id="rc"></div>
+<div id="ov">
+  <div class="ovb">
+    <img id="ovimg" alt="رسید مشتری">
+    <div class="ovacts">
+      <button class="save" id="ovsend" type="button">ارسال عکس</button>
+      <button class="tool" id="ovwa" type="button">واتساپ</button>
+      <button class="tool" id="ovsms" type="button">پیامک کد</button>
+      <button class="tool" id="ovdl" type="button">دانلود</button>
+      <button class="tool" id="ovx" type="button">بستن</button>
+    </div>
+  </div>
+</div>
+<div id="lock">
+  <form id="lf">
+    <label>رمز ورود<input id="lp" type="password" inputmode="numeric" autocomplete="off"></label>
+    <button class="save" type="submit">ورود</button>
+  </form>
+</div>
+
+<script>
+var KEY = 'repair-customers', PINKEY = 'repair-pin', BKKEY = 'repair-lastbackup';
+var LABELS = {wait: 'در حال تعمیر', ready: 'آماده تحویل', done: 'تحویل شد'};
+var STCOL = {wait: '#b7791f', ready: '#0f7b4f', done: '#6b7b82'};
+var SHOP = 'تعمیرات موبایل علی';
+var ADDR = 'سرخس؛ طالقانی غربی، موبایل علی';
+var TEL = '09300517581';
+var THANKS = 'با تشکر از اعتماد شما';
+var LOGO = 'logo.jpg';
+var WARN = [
+  'فروشگاه بیشتر از یک ماه تعهدی برای نگهداری تلفن شما ندارد.',
+  'با توجه به نوسانات بازار، تحویل دیرهنگام تلفن همراه به نرخ روز قطعات حساب می‌گردد.',
+  'مسئولیت اطلاعات، عکس‌ها و برنامه‌های داخل گوشی با مشتری است؛ لطفاً پیش از تحویل پشتیبان‌گیری کنید.',
+  'در صورت کشف ایراد پنهان حین تعمیر، پس از اطلاع و تأیید شما اقدام می‌شود. دستگاه‌های آب‌دیده یا شکسته ممکن است حین تعمیر آسیب بیشتری ببینند.',
+  'تحویل دستگاه فقط با ارائه این رسید، شماره رسید یا کد تحویل انجام می‌شود.',
+  'گارانتی تعمیر شامل ضربه، آب‌خوردگی و بازکردن دستگاه توسط دیگران نمی‌شود.'
+];
+var MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+var data = [], flt = 'all', oldOnly = false, curC = null, curBlob = null;
+var $ = function (id) { return document.getElementById(id); };
+
+// تاریخ شمسی
+function div(a, b) { return Math.floor(a / b); }
+function g2j(gy, gm, gd) {
+  var gdm = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+  var gy2 = gm > 2 ? gy + 1 : gy;
+  var days = 355666 + 365 * gy + div(gy2 + 3, 4) - div(gy2 + 99, 100) + div(gy2 + 399, 400) + gd + gdm[gm - 1];
+  var jy = -1595 + 33 * div(days, 12053);
+  days %= 12053;
+  jy += 4 * div(days, 1461);
+  days %= 1461;
+  if (days > 365) { jy += div(days - 1, 365); days = (days - 1) % 365; }
+  var jm = days < 186 ? 1 + div(days, 31) : 7 + div(days - 186, 30);
+  var jd = 1 + (days < 186 ? days % 31 : (days - 186) % 30);
+  return [jy, jm, jd];
+}
+function j2g(jy, jm, jd) {
+  jy += 1595;
+  var days = -355668 + 365 * jy + div(jy, 33) * 8 + div((jy % 33) + 3, 4) + jd + (jm < 7 ? (jm - 1) * 31 : (jm - 7) * 30 + 186);
+  var gy = 400 * div(days, 146097);
+  days %= 146097;
+  if (days > 36524) {
+    days--;
+    gy += 100 * div(days, 36524);
+    days %= 36524;
+    if (days >= 365) days++;
+  }
+  gy += 4 * div(days, 1461);
+  days %= 1461;
+  if (days > 365) { gy += div(days - 1, 365); days = (days - 1) % 365; }
+  var gd = days + 1;
+  var sal = [0, 31, ((gy % 4 === 0 && gy % 100 !== 0) || gy % 400 === 0) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  var gm = 0;
+  while (gm < 13 && gd > sal[gm]) { gd -= sal[gm]; gm++; }
+  return [gy, gm, gd];
+}
+function p2(n) { return n < 10 ? '0' + n : '' + n; }
+function opt(v, t) {
+  var o = document.createElement('option');
+  o.value = v; o.textContent = t;
+  return o;
+}
+function faNum(n) { return Number(n).toLocaleString('fa-IR', {useGrouping: false}); }
+function fa(s) { return String(s).replace(/\d/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; }); }
+function fillDate() {
+  var n = new Date();
+  var y = g2j(n.getFullYear(), n.getMonth() + 1, n.getDate())[0];
+  for (var i = y - 1; i <= y + 2; i++) $('dy').appendChild(opt(i, faNum(i)));
+  MONTHS.forEach(function (m, i) { $('dm').appendChild(opt(i + 1, m)); });
+  for (var d = 1; d <= 31; d++) $('dd').appendChild(opt(d, faNum(d)));
+}
+function getDue() {
+  var y = +$('dy').value, m = +$('dm').value, d = +$('dd').value;
+  if (!y || !m || !d) return '';
+  var g = j2g(y, m, d);
+  return g[0] + '-' + p2(g[1]) + '-' + p2(g[2]);
+}
+function setDue(iso) {
+  if (!iso) { $('dy').value = ''; $('dm').value = ''; $('dd').value = ''; return; }
+  var p = iso.split('-'), j = g2j(+p[0], +p[1], +p[2]);
+  if (!$('dy').querySelector('option[value="' + j[0] + '"]')) $('dy').appendChild(opt(j[0], faNum(j[0])));
+  $('dy').value = j[0]; $('dm').value = j[1]; $('dd').value = j[2];
+}
+
+function fa2en(s) {
+  return String(s).replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); })
+                  .replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); });
+}
+function genCode() {
+  var c;
+  do { c = String(Math.floor(10000 + Math.random() * 90000)); }
+  while (data.some(function (x) { return String(x.code) === c; }));
+  return c;
+}
+function load() {
+  try { data = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { data = []; }
+  var max = 1000, changed = false;
+  data.forEach(function (c) { if (c.no && c.no > max) max = c.no; });
+  data.forEach(function (c) {
+    if (!c.no) { c.no = ++max; changed = true; }
+    if (!c.code) { c.code = genCode(); changed = true; }
+  });
+  if (changed) save();
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { alert('ذخیره‌سازی در این مرورگر ممکن نیست.'); }
+}
+function el(tag, cls, text) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+}
+function nextNo() {
+  var m = 1000;
+  data.forEach(function (c) { if (c.no > m) m = c.no; });
+  return m + 1;
+}
+function fd(d) {
+  if (typeof d === 'string') d += 'T12:00:00';
+  return new Date(d).toLocaleDateString('fa-IR-u-ca-persian');
+}
+function tm(n) { return Number(n).toLocaleString('fa-IR') + ' تومان'; }
+function money(c) { return c.cost ? tm(c.cost) : 'مشخص نشده'; }
+function today() {
+  var d = new Date();
+  return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate());
+}
+function isLate(c) { return c.due && c.status !== 'done' && c.due < today(); }
+function isOld(c) { return c.status !== 'done' && Date.now() - c.id > 25 * 86400000; }
+
+// متن رسید، واتساپ و پیامک
+function waNumber(p) {
+  p = fa2en(p).replace(/\D/g, '');
+  if (p.indexOf('00') === 0) return p.slice(2);
+  if (p[0] === '0') return '98' + p.slice(1);
+  if (p.length === 10 && p[0] === '9') return '98' + p;
+  return p;
+}
+function receiptLines(c) {
+  var l = ['رسید شماره ' + c.no, 'مشتری: ' + c.name, 'دستگاه: ' + c.model, 'مشکل: ' + c.issue];
+  if (c.cond) l.push('ظاهر دستگاه: ' + c.cond);
+  if (c.acc && c.acc.length) l.push('لوازم همراه: ' + c.acc.join('، '));
+  l.push('هزینه: ' + money(c));
+  if (c.deposit) {
+    l.push('بیعانه: ' + tm(c.deposit));
+    if (c.cost) l.push('مانده: ' + tm(Math.max(0, c.cost - c.deposit)));
+  }
+  l.push('وضعیت: ' + LABELS[c.status]);
+  if (c.due) l.push('تاریخ تحویل: ' + fd(c.due));
+  return l;
+}
+function msgText(c) {
+  return '*' + SHOP + '*\n' + receiptLines(c).join('\n') +
+    '\n\nکد تحویل: ' + fa(c.code) + '\n(هنگام دریافت گوشی این کد را اعلام کنید)' +
+    '\n\nآدرس: ' + ADDR + '\nتماس: ' + fa(TEL) + '\n\n' + THANKS;
+}
+function waLink(c) {
+  return 'https://wa.me/' + waNumber(c.phone) + '?text=' + encodeURIComponent(msgText(c));
+}
+function smsCodeLink(c) {
+  var t = 'سلام ' + c.name + '، رسید گوشی ' + c.model + ' شما در ' + SHOP + ' ثبت شد.\n' +
+    'شماره رسید: ' + fa(c.no) + '\nکد تحویل: ' + fa(c.code) +
+    '\nهنگام دریافت گوشی این کد را اعلام کنید.\n' + fa(TEL);
+  return 'sms:' + fa2en(c.phone).replace(/[^\d+]/g, '') + '?body=' + encodeURIComponent(t);
+}
+function smsReadyLink(c) {
+  var t = 'سلام ' + c.name + '، گوشی ' + c.model + ' شما آماده تحویل است. ' + SHOP + ' - ' + fa(TEL);
+  return 'sms:' + fa2en(c.phone).replace(/[^\d+]/g, '') + '?body=' + encodeURIComponent(t);
+}
+
+// عکس رسید
+var W = 420, S = 3;
+var BG = '#dbe3f2', BRAND = '#1d4ed8', NAVY = '#0f2a7a', TINT = '#eaf0ff', INK = '#16203a', MUTE = '#5a6685', LEAD = '#b8c4e2';
+var FONT = 'Vazirmatn, Tahoma, sans-serif';
+
+function rr(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function wrap(ctx, text, maxW) {
+  var words = String(text).split(' '), lines = [], cur = '';
+  words.forEach(function (w) {
+    var t = cur ? cur + ' ' + w : w;
+    if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t;
+  });
+  if (cur) lines.push(cur);
+  return lines;
+}
+function keyLogo(img, rgb, op, size) {
+  var cv = document.createElement('canvas');
+  cv.width = size; cv.height = size;
+  var x = cv.getContext('2d');
+  x.drawImage(img, 0, 0, size, size);
+  var d = x.getImageData(0, 0, size, size), p = d.data;
+  for (var i = 0; i < p.length; i += 4) {
+    var L = 0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2];
+    var a = Math.min(1, Math.max(0, (L - 125) / 60));
+    p[i] = rgb[0]; p[i + 1] = rgb[1]; p[i + 2] = rgb[2];
+    p[i + 3] = Math.round(a * 255 * op);
+  }
+  x.putImageData(d, 0, 0);
+  return cv;
+}
+var assetsP = null;
+function getAssets() {
+  if (assetsP) return assetsP;
+  assetsP = new Promise(function (res) {
+    var img = new Image();
+    img.onload = function () {
+      try { res({wm: keyLogo(img, [15, 42, 122], 0.10, 520), white: keyLogo(img, [255, 255, 255], 1, 160)}); }
+      catch (e) { res({}); }
+    };
+    img.onerror = function () { res({}); };
+    img.src = LOGO;
+  });
+  return assetsP;
+}
+function loadFonts() {
+  if (!document.fonts || !document.fonts.load) return Promise.resolve();
+  var s = 'آبپتثجچحخدذرزسشصضطظعغفقکگلمنوهیء۰۱۲۳۴۵۶۷۸۹';
+  return Promise.all(['400', '600', '800'].map(function (w) {
+    return document.fonts.load(w + ' 14px Vazirmatn', s).catch(function () {});
+  })).catch(function () {});
+}
+
+function paint(ctx, c, A, H) {
+  var M = 14, x0 = M, x1 = W - M, CW = W - 2 * M, HH = 84, FH = 88;
+  var xr = x1 - 18, xl = x0 + 18, inner = CW - 36;
+  ctx.direction = 'rtl';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = BG;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.save();
+  ctx.shadowColor = 'rgba(15,42,122,.22)'; ctx.shadowBlur = 14; ctx.shadowOffsetY = 4;
+  rr(ctx, x0, M, CW, H - 2 * M, 14);
+  ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  rr(ctx, x0, M, CW, H - 2 * M, 14);
+  ctx.clip();
+  if (A.wm) {
+    var ws = CW * 0.86, top = M + HH, bot = H - M - FH;
+    ctx.drawImage(A.wm, W / 2 - ws / 2, (top + bot) / 2 - ws / 2, ws, ws);
+  }
+  ctx.fillStyle = BRAND; ctx.fillRect(x0, M, CW, HH);
+  ctx.fillStyle = NAVY; ctx.fillRect(x0, H - M - FH, CW, FH);
+
+  // سربرگ
+  var lx = xr;
+  if (A.white) { ctx.drawImage(A.white, xr - 56, M + 14, 56, 56); lx = xr - 66; }
+  ctx.fillStyle = '#fff'; ctx.textAlign = 'right';
+  ctx.font = '800 20px ' + FONT; ctx.fillText(SHOP, lx, M + 42);
+  ctx.font = '400 12px ' + FONT; ctx.globalAlpha = 0.85;
+  ctx.fillText('رسید پذیرش دستگاه', lx, M + 62);
+  ctx.globalAlpha = 1;
+  rr(ctx, xl, M + 17, 78, 50, 10); ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.textAlign = 'center';
+  ctx.fillStyle = MUTE; ctx.font = '400 10px ' + FONT; ctx.fillText('شماره رسید', xl + 39, M + 33);
+  ctx.fillStyle = NAVY; ctx.font = '800 20px ' + FONT; ctx.fillText(faNum(c.no), xl + 39, M + 58);
+
+  // مشخصات
+  var y = M + HH + 24;
+  function row(label, val, bold) {
+    ctx.font = '400 13px ' + FONT;
+    var lw = ctx.measureText(label).width;
+    ctx.font = (bold ? '800' : '600') + ' 13px ' + FONT;
+    var vw = ctx.measureText(val).width;
+    if (vw > inner * 0.58) {
+      ctx.font = '400 12px ' + FONT; ctx.fillStyle = MUTE; ctx.textAlign = 'right';
+      ctx.fillText(label, xr, y); y += 20;
+      ctx.font = '600 13px ' + FONT; ctx.fillStyle = INK;
+      wrap(ctx, val, inner).forEach(function (l) { ctx.fillText(l, xr, y); y += 20; });
+      y += 2;
+    } else {
+      ctx.font = '400 13px ' + FONT; ctx.fillStyle = MUTE; ctx.textAlign = 'right';
+      ctx.fillText(label, xr, y);
+      ctx.font = (bold ? '800' : '600') + ' 13px ' + FONT;
+      ctx.fillStyle = bold ? NAVY : INK; ctx.textAlign = 'left';
+      ctx.fillText(val, xl, y);
+      ctx.strokeStyle = LEAD; ctx.lineWidth = 1.5; ctx.setLineDash([1.5, 4]);
+      ctx.beginPath(); ctx.moveTo(xl + vw + 8, y - 4); ctx.lineTo(xr - lw - 8, y - 4); ctx.stroke();
+      ctx.setLineDash([]);
+      y += 26;
+    }
+  }
+  row('مشتری', c.name);
+  row('دستگاه', c.model);
+  row('مشکل', c.issue);
+  if (c.cond) row('ظاهر دستگاه', c.cond);
+  if (c.acc && c.acc.length) row('لوازم همراه', c.acc.join('، '));
+  row('تاریخ پذیرش', fd(c.id));
+  if (c.due) row('تاریخ تحویل', fd(c.due));
+  if (c.deposit) row('بیعانه پرداختی', tm(c.deposit));
+  if (c.cost && c.deposit) row('مانده حساب', tm(Math.max(0, c.cost - c.deposit)), true);
+
+  // هزینه و وضعیت
+  y += 6;
+  rr(ctx, xl, y, inner, 58, 12); ctx.fillStyle = TINT; ctx.fill();
+  ctx.textAlign = 'right';
+  ctx.fillStyle = MUTE; ctx.font = '400 11px ' + FONT; ctx.fillText('هزینه تعمیر', xr - 14, y + 22);
+  ctx.fillStyle = NAVY; ctx.font = '800 18px ' + FONT; ctx.fillText(money(c), xr - 14, y + 45);
+  var st = LABELS[c.status], col = STCOL[c.status];
+  ctx.font = '800 13px ' + FONT;
+  var sw = ctx.measureText(st).width + 24;
+  ctx.save();
+  ctx.translate(xl + 14 + sw / 2, y + 29); ctx.rotate(-0.1);
+  ctx.strokeStyle = col; ctx.lineWidth = 2; rr(ctx, -sw / 2, -14, sw, 28, 7); ctx.stroke();
+  ctx.fillStyle = col; ctx.textAlign = 'center'; ctx.fillText(st, 0, 5);
+  ctx.restore();
+  y += 58 + 14;
+
+  // کد تحویل
+  rr(ctx, xl, y, inner, 76, 12);
+  ctx.strokeStyle = BRAND; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = MUTE; ctx.font = '400 11px ' + FONT; ctx.fillText('کد تحویل شما', W / 2, y + 20);
+  ctx.fillStyle = BRAND; ctx.font = '800 30px ' + FONT; ctx.fillText(faNum(c.code), W / 2, y + 51);
+  ctx.fillStyle = MUTE; ctx.font = '400 10.5px ' + FONT; ctx.fillText('هنگام دریافت گوشی این کد را اعلام کنید', W / 2, y + 68);
+  y += 76 + 18;
+
+  // خط بریده
+  var perfY = y;
+  ctx.strokeStyle = LEAD; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
+  ctx.beginPath(); ctx.moveTo(x0, perfY); ctx.lineTo(x1, perfY); ctx.stroke(); ctx.setLineDash([]);
+  y += 28;
+
+  // هشدارها
+  ctx.textAlign = 'right'; ctx.fillStyle = NAVY; ctx.font = '800 14px ' + FONT;
+  ctx.fillText('تعهدات و هشدارها', xr, y); y += 22;
+  WARN.forEach(function (t, i) {
+    ctx.font = '400 11.5px ' + FONT;
+    var ls = wrap(ctx, t, inner - 20);
+    ctx.fillStyle = BRAND; ctx.font = '800 11.5px ' + FONT;
+    ctx.fillText(faNum(i + 1) + '.', xr, y);
+    ctx.fillStyle = MUTE; ctx.font = '400 11.5px ' + FONT;
+    ls.forEach(function (l) { ctx.fillText(l, xr - 20, y); y += 19; });
+    y += 3;
+  });
+
+  // پایین رسید
+  var ft = H - M - FH;
+  ctx.textAlign = 'center'; ctx.fillStyle = '#fff';
+  ctx.font = '800 17px ' + FONT; ctx.fillText(THANKS, W / 2, ft + 32);
+  ctx.font = '400 12px ' + FONT; ctx.globalAlpha = 0.9;
+  ctx.fillText(ADDR, W / 2, ft + 54);
+  ctx.fillText('تماس: ' + fa(TEL), W / 2, ft + 72);
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  ctx.fillStyle = BG;
+  ctx.beginPath(); ctx.arc(x0, perfY, 12, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(x1, perfY, 12, 0, 7); ctx.fill();
+  return y + 8 + FH + M;
+}
+function makeReceipt(c) {
+  return Promise.all([getAssets(), loadFonts()]).then(function (r) {
+    var m = document.createElement('canvas');
+    m.width = W; m.height = 10;
+    var H = Math.ceil(paint(m.getContext('2d'), c, {}, 4000));
+    var cv = document.createElement('canvas');
+    cv.width = W * S; cv.height = H * S;
+    var x = cv.getContext('2d');
+    x.scale(S, S);
+    paint(x, c, r[0], H);
+    return cv;
+  });
+}
+function showReceipt(c) {
+  makeReceipt(c).then(function (cv) {
+    $('ovimg').src = cv.toDataURL('image/png');
+    curBlob = null;
+    cv.toBlob(function (b) { curBlob = b; }, 'image/png');
+    curC = c;
+    $('ov').style.display = 'grid';
+  });
+}
+function downloadReceipt() {
+  if (!curBlob || !curC) return;
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(curBlob);
+  a.download = 'receipt-' + curC.no + '.png';
+  a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+}
+$('ovsend').onclick = function () {
+  if (!curBlob || !curC) return;
+  var f = new File([curBlob], 'receipt-' + curC.no + '.png', {type: 'image/png'});
+  if (navigator.canShare && navigator.canShare({files: [f]})) {
+    navigator.share({files: [f], text: SHOP + ' - رسید شماره ' + fa(curC.no) + ' - کد تحویل: ' + fa(curC.code)}).catch(function () {});
+  } else {
+    downloadReceipt();
+    alert('عکس رسید ذخیره شد. الان گفتگوی واتساپ مشتری باز می‌شود؛ عکس را از گالری پیوست کن.');
+    window.open(waLink(curC), '_blank');
+  }
+};
+$('ovwa').onclick = function () { if (curC) window.open(waLink(curC), '_blank'); };
+$('ovsms').onclick = function () { if (curC) location.href = smsCodeLink(curC); };
+$('ovdl').onclick = downloadReceipt;
+$('ovx').onclick = function () { $('ov').style.display = 'none'; };
+
+function printReceipt(c) {
+  makeReceipt(c).then(function (cv) {
+    var rc = $('rc');
+    rc.textContent = '';
+    var img = new Image();
+    img.onload = function () { window.print(); };
+    img.src = cv.toDataURL('image/png');
+    rc.appendChild(img);
+  });
+}
+
+// گزارش و فهرست
+function renderReport() {
+  var m = {}, box = $('rep');
+  box.textContent = '';
+  data.forEach(function (c) {
+    if (c.status === 'done' && c.cost) {
+      var k = new Date(c.doneAt || c.id).toLocaleDateString('fa-IR-u-ca-persian', {year: 'numeric', month: 'long'});
+      m[k] = (m[k] || 0) + Number(c.cost);
+    }
+  });
+  var keys = Object.keys(m);
+  if (!keys.length) { box.appendChild(el('div', 'meta', 'هنوز دستگاه تحویل‌شده‌ای با هزینه ثبت نشده.')); return; }
+  keys.forEach(function (k) {
+    var r = el('div', 'rep');
+    r.appendChild(el('span', '', k));
+    r.appendChild(el('strong', '', tm(m[k])));
+    box.appendChild(r);
+  });
+}
+function banners() {
+  var n = data.filter(isOld).length, b1 = $('bn1');
+  b1.style.display = (n || oldOnly) ? 'block' : 'none';
+  b1.textContent = oldOnly ? 'فقط دستگاه‌های بیش از ۲۵ روز مانده نمایش داده می‌شود. برای نمایش همه بزن.'
+    : faNum(n) + ' دستگاه بیش از ۲۵ روز است تحویل نشده و مهلت نگهداری یک ماه است. برای دیدن بزن.';
+  var last = 0;
+  try { last = +localStorage.getItem(BKKEY) || 0; } catch (e) {}
+  $('bn2').style.display = (data.length && Date.now() - last > 7 * 86400000) ? 'block' : 'none';
+}
+
+function render() {
+  var q = fa2en($('q').value.trim().toLowerCase());
+  var list = $('list');
+  list.textContent = '';
+  document.querySelectorAll('.chip').forEach(function (b) {
+    b.classList.toggle('on', b.getAttribute('data-f') === flt);
+  });
+  var shown = data.filter(function (c) {
+    if (flt !== 'all' && c.status !== flt) return false;
+    if (oldOnly && !isOld(c)) return false;
+    return !q || (c.no + ' ' + c.code + ' ' + c.name + ' ' + fa2en(c.phone) + ' ' + c.model).toLowerCase().indexOf(q) > -1;
+  });
+  $('total').textContent = data.length + ' مشتری ثبت شده';
+  renderReport();
+  banners();
+  if (!shown.length) {
+    list.appendChild(el('div', 'empty', data.length ? 'موردی پیدا نشد.' : 'هنوز مشتری ثبت نشده. فرم بالا را پر کن.'));
+    return;
+  }
+  shown.slice().reverse().forEach(function (c) {
+    var box = el('div', 'item s-' + c.status);
+    var top = el('div', 'top');
+    top.appendChild(el('span', 'name', '#' + c.no + ' ' + c.name));
+    top.appendChild(el('span', 'date', fd(c.id)));
+    box.appendChild(top);
+    box.appendChild(el('div', 'meta', c.model + ' - ' + c.issue));
+    if (c.cond) box.appendChild(el('div', 'meta', 'ظاهر: ' + c.cond));
+    if (c.acc && c.acc.length) box.appendChild(el('div', 'meta', 'لوازم همراه: ' + c.acc.join('، ')));
+    if (c.lockcode) box.appendChild(el('div', 'meta', 'رمز قفل: ' + c.lockcode));
+    var cost = 'هزینه: ' + money(c);
+    if (c.deposit) cost += ' | بیعانه: ' + tm(c.deposit) + (c.cost ? ' | مانده: ' + tm(Math.max(0, c.cost - c.deposit)) : '');
+    box.appendChild(el('div', 'meta', cost));
+    box.appendChild(el('div', 'meta', 'کد تحویل: ' + fa(c.code)));
+    if (c.due) box.appendChild(el('div', isLate(c) ? 'meta late' : 'meta',
+      'تحویل: ' + fd(c.due) + (isLate(c) ? ' (دیرکرد)' : '')));
+    if (isOld(c)) box.appendChild(el('div', 'meta late', 'بیش از ۲۵ روز مانده؛ مهلت نگهداری یک ماه است.'));
+
+    var acts = el('div', 'acts');
+    var b1 = el('button', 'main', 'عکس رسید');
+    b1.type = 'button';
+    b1.onclick = function () { showReceipt(c); };
+    acts.appendChild(b1);
+    var w = el('a', 'wa', 'واتساپ');
+    w.href = waLink(c); w.target = '_blank'; w.rel = 'noopener';
+    acts.appendChild(w);
+    var s1 = el('a', '', 'پیامک کد');
+    s1.href = smsCodeLink(c);
+    acts.appendChild(s1);
+    var s2 = el('a', '', 'پیامک آماده');
+    s2.href = smsReadyLink(c);
+    acts.appendChild(s2);
+
+    var acts2 = el('div', 'acts');
+    var sel = document.createElement('select');
+    Object.keys(LABELS).forEach(function (k) {
+      var o = el('option', '', LABELS[k]);
+      o.value = k;
+      if (k === c.status) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.onchange = function () {
+      var v = sel.value;
+      if (v === 'done' && c.status !== 'done') {
+        var x = prompt('کد تحویل را از مشتری بپرس و وارد کن.\n(اگر مشتری کد را ندارد، خالی بگذار)');
+        if (x === null) { sel.value = c.status; return; }
+        x = fa2en(x).trim();
+        if (x && x !== String(c.code)) { alert('کد اشتباه است.'); sel.value = c.status; return; }
+        if (!x && !confirm('بدون کد تحویل، دستگاه تحویل داده شود؟')) { sel.value = c.status; return; }
+      }
+      c.status = v;
+      c.doneAt = v === 'done' ? Date.now() : null;
+      save(); render();
+    };
+    acts2.appendChild(sel);
+    var call = el('a', '', 'تماس');
+    call.href = 'tel:' + fa2en(c.phone).replace(/[^\d+]/g, '');
+    acts2.appendChild(call);
+    var pr = el('button', '', 'چاپ');
+    pr.type = 'button';
+    pr.onclick = function () { printReceipt(c); };
+    acts2.appendChild(pr);
+    var ed = el('button', '', 'ویرایش');
+    ed.type = 'button';
+    ed.onclick = function () { startEdit(c); };
+    acts2.appendChild(ed);
+    var del = el('button', 'del', 'حذف');
+    del.type = 'button';
+    del.onclick = function () {
+      if (confirm('«' + c.name + '» حذف شود؟')) {
+        data = data.filter(function (x) { return x.id !== c.id; });
+        save(); render();
+      }
+    };
+    acts2.appendChild(del);
+    box.appendChild(acts);
+    box.appendChild(acts2);
+    list.appendChild(box);
+  });
+}
+
+// فرم
+function getAcc() {
+  return Array.prototype.map.call(document.querySelectorAll('#acc input:checked'), function (i) { return i.value; });
+}
+function setAcc(arr) {
+  document.querySelectorAll('#acc input').forEach(function (i) {
+    i.checked = !!arr && arr.indexOf(i.value) > -1;
+  });
+}
+function startEdit(c) {
+  $('eid').value = c.id;
+  $('name').value = c.name; $('phone').value = c.phone; $('model').value = c.model;
+  $('cost').value = c.cost; $('deposit').value = c.deposit || ''; $('issue').value = c.issue;
+  $('cond').value = c.cond || ''; $('lockcode').value = c.lockcode || '';
+  setAcc(c.acc); setDue(c.due);
+  $('status').value = c.status;
+  $('sbtn').textContent = 'ذخیره تغییرات';
+  $('cbtn').style.display = 'block';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+function endEdit() {
+  $('f').reset();
+  $('eid').value = '';
+  $('sbtn').textContent = 'ثبت مشتری';
+  $('cbtn').style.display = 'none';
+}
+$('cbtn').onclick = endEdit;
+
+$('f').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var v = function (id) { return $(id).value.trim(); };
+  var id = $('eid').value, saved = null;
+  if (id) {
+    var c = data.filter(function (x) { return String(x.id) === id; })[0];
+    if (c) {
+      var wasDone = c.status === 'done';
+      c.name = v('name'); c.phone = v('phone'); c.model = v('model');
+      c.issue = v('issue'); c.cost = v('cost'); c.deposit = v('deposit'); c.due = getDue(); c.status = v('status');
+      c.cond = v('cond'); c.lockcode = v('lockcode'); c.acc = getAcc();
+      if (c.status === 'done' && !wasDone) c.doneAt = Date.now();
+      if (c.status !== 'done') c.doneAt = null;
+    }
+  } else {
+    var s = v('status');
+    saved = {
+      id: Date.now(), no: nextNo(), code: genCode(),
+      name: v('name'), phone: v('phone'), model: v('model'),
+      issue: v('issue'), cost: v('cost'), deposit: v('deposit'), due: getDue(), status: s,
+      cond: v('cond'), lockcode: v('lockcode'), acc: getAcc(),
+      doneAt: s === 'done' ? Date.now() : null
+    };
+    data.push(saved);
+  }
+  save();
+  endEdit();
+  render();
+  if (saved && confirm('مشتری ثبت شد. عکس رسید ساخته شود؟')) showReceipt(saved);
+});
+
+$('q').addEventListener('input', render);
+document.querySelectorAll('.chip').forEach(function (b) {
+  b.onclick = function () { flt = b.getAttribute('data-f'); render(); };
+});
+$('bn1').onclick = function () { oldOnly = !oldOnly; render(); };
+$('bn2').onclick = function () { $('exp').click(); };
+
+// پشتیبان
+$('exp').onclick = function () {
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ali-repair-backup-' + today() + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  try { localStorage.setItem(BKKEY, String(Date.now())); } catch (e) {}
+  banners();
+};
+$('imp').onclick = function () { $('file').click(); };
+$('file').onchange = function (e) {
+  var f = e.target.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function () {
+    try {
+      var arr = JSON.parse(r.result);
+      if (!Array.isArray(arr)) throw 0;
+      if (confirm('اطلاعات فعلی با فایل پشتیبان جایگزین شود؟')) { data = arr; load(); save(); render(); }
+    } catch (err) { alert('فایل پشتیبان معتبر نیست.'); }
+  };
+  r.readAsText(f);
+  e.target.value = '';
+};
+
+// رمز ورود (قفل ساده، نه امنیت کامل)
+function getPin() { try { return localStorage.getItem(PINKEY); } catch (e) { return null; } }
+function lockIfNeeded() {
+  if (getPin()) { $('lock').style.display = 'grid'; $('lp').focus(); }
+}
+$('pin').onclick = function () {
+  var p = prompt('رمز جدید را وارد کن (خالی بگذار تا رمز حذف شود)');
+  if (p === null) return;
+  try {
+    if (p.trim()) localStorage.setItem(PINKEY, encodeURIComponent(fa2en(p.trim())));
+    else localStorage.removeItem(PINKEY);
+  } catch (e) {}
+};
+$('lf').addEventListener('submit', function (e) {
+  e.preventDefault();
+  if (encodeURIComponent(fa2en($('lp').value.trim())) === getPin()) {
+    $('lock').style.display = 'none';
+    $('lp').value = '';
+  } else { alert('رمز اشتباه است.'); }
+});
+
+// نصب مثل اپ
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  });
+}
+
+fillDate();
+load();
+render();
+lockIfNeeded();
+</script>
+</body>
+</html>
